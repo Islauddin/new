@@ -14,7 +14,7 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-df1=spark.read.json("s3://create32-s3bucket-chmtgtedqwvs/")
+df1=spark.read.csv("s3://create32-s3bucket-chmtgtedqwvs/")
 df1.coalesce(1).write.parquet("s3://bigdata1111/")
 
 job.commit()
