@@ -13,7 +13,7 @@ jobs:
         run: |
           aws cloudformation deploy \
             --stack-name CFTStack \
-            --template-file .github/workflows/cft.yml \
+            --template-file .github/workflows/cft.yaml \
             --capabilities LabRole
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
