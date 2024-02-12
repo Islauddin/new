@@ -1,5 +1,4 @@
 name: AWS Resource Creation 
-
 on:
   push:
     branches:
