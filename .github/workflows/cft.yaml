@@ -1,13 +1,60 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Create AWS Resources"
+
 Resources:
 
     MyS3Bucket:
         Type: AWS::S3::Bucket
         DeletionPolicy: Delete
         Properties:
-            BucketName: group06isludatalake
+            BucketName: group05isludatalake
 
     MyS3Bucket1:
         Type: AWS::S3::Bucket
         DeletionPolicy: Delete
         Properties:
-            BucketName: group06isluoutput
+            BucketName: group05isluoutput
+        
+        
+    GlueDatabase:
+        Type: AWS::Glue::Database
+        Properties:
+            CatalogId: !Ref AWS::AccountId
+            DatabaseInput:
+                Name: gitdatabase 
+                   
+
+    WorkflowJob:
+        Type: AWS::Glue::Workflow
+        Properties:
+            Description: Create workflow
+            MaxConcurrentRuns: 1
+            Name: jobworkflow        
+    
+    GlueJobImport:
+        Type: AWS::Glue::Job
+        DependsOn: MyS3Bucket
+        Properties:
+            Name: data-ingestion
+            Description: Ingests data from s3 and writes it as a parquet file to the data lake
+            ExecutionClass: FLEX
+            GlueVersion: 4.0
+            MaxRetries: 0
+            NumberOfWorkers: 6
+            Role: arn:aws:iam::672497526349:role/LabRole
+            Timeout: 40
+            WorkerType: G.1X
+            Command:
+                Name: glueetl
+                ScriptLocation: s3://bigdata1111/scripts_read.py
+
+
+    WorkflowStartTrigger:
+          Type: AWS::Glue::Trigger
+          Properties:
+              Name: StartTrigger
+              Type: ON_DEMAND
+              Description: Trigger for starting the workflow
+              Actions:
+                - JobName: !Ref GlueJobImport
+              WorkflowName:  !Ref WorkflowJob
