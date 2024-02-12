@@ -17,5 +17,5 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: manisha
+      - name: islauddin
         run: aws s3 sync . s3://bigdata1111/manisha --exclude ".git/*"
