@@ -11,6 +11,14 @@ jobs:
     steps: 
       - name: Checkout code 
         uses: actions/checkout@v2
+      - name: Upload Script to S3 Bucket
+        run: |
+          aws s3 cp .github/workflows/scripts_read.py s3://group05iusludatalake/datawarehouse/
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: Deploy CloudFormation stack
         run: |
