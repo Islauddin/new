@@ -49,16 +49,6 @@ Resources:
                 ScriptLocation: s3://bigdata1111/scripts_read.py
 
     
-    GlueCrawler:
-        Type: AWS::Glue::Crawler
-        Properties:
-            Name: CrawlingData
-            DatabaseName:  gitdatabase
-            Targets:
-                S3Targets:
-                    - Path: s3://group05islaudatalake/datawarehouse/
-            Role: arn:aws:iam::672497526349:role/LabRole
-    
   
     WorkflowStartTrigger:
           Type: AWS::Glue::Trigger
@@ -69,20 +59,5 @@ Resources:
               Actions:
                 - JobName: !Ref GlueJobImport
               WorkflowName:  !Ref WorkflowJob
-
-    CrawlerJobTrigger:
-        Type: AWS::Glue::Trigger
-        Properties:
-            Name: Jobsuccesful
-            Type: CONDITIONAL
-            StartOnCreation: TRUE
-            Description: Trigger to start the crawler
-            Actions:
-              - CrawlerName :  crawlingdata
-            Predicate: 
-              Conditions:
-                - LogicalOperator: EQUALS
-                  JobName: !Ref GlueJobImport
-                  State: SUCCEEDED
-            WorkflowName: !Ref WorkflowJob  
+  
                
