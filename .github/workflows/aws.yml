@@ -1,7 +1,7 @@
 name: AWS Resource Creation 
 on:
   push:
-    branches:
+    branches: 
       - main
   workflow_dispatch:
 
