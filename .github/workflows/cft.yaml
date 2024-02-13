@@ -46,7 +46,7 @@ Resources:
             WorkerType: G.1X
             Command:
                 Name: glueetl
-                ScriptLocation: s3://bigdata1111/scripts_read.py
+                ScriptLocation: s3://group05iusludatalake/datawarehouse/scripts_read.py
 
     
   
