@@ -41,7 +41,7 @@ Resources:
             GlueVersion: 4.0
             MaxRetries: 0
             NumberOfWorkers: 6
-            Role: arn:aws:iam::672497526349:role/LabRole
+            Role: arn:aws:iam::843541387255:role/LabRole
             Timeout: 40
             WorkerType: G.1X
             Command:
@@ -85,18 +85,4 @@ Resources:
                   JobName: !Ref GlueJobImport
                   State: SUCCEEDED
             WorkflowName: !Ref WorkflowJob  
-            
-            
-    MyAthenaWorkGroup:
-        Type: AWS::Athena::WorkGroup
-        Properties:
-            Name: gitworkgrp
-            Description: workgroup for Athena
-            State: ENABLED
-            WorkGroupConfiguration:
-                BytesScannedCutoffPerQuery: 200000000
-                EnforceWorkGroupConfiguration: false
-                PublishCloudWatchMetricsEnabled: true
-                RequesterPaysEnabled: true
-                ResultConfiguration:
-                    OutputLocation: s3://group05islauoutput/Query/    
+               
