@@ -7,13 +7,13 @@ Resources:
         Type: AWS::S3::Bucket
         DeletionPolicy: Delete
         Properties:
-            BucketName: group05isludatalake
+            BucketName: group05islaudatalake
 
     MyS3Bucket1:
         Type: AWS::S3::Bucket
         DeletionPolicy: Delete
         Properties:
-            BucketName: group05isluoutput
+            BucketName: group05islauoutput
         
         
     GlueDatabase:
@@ -41,14 +41,25 @@ Resources:
             GlueVersion: 4.0
             MaxRetries: 0
             NumberOfWorkers: 6
-            Role: arn:aws:iam::843541387255:role/LabRole
+            Role: arn:aws:iam::672497526349:role/LabRole
             Timeout: 40
             WorkerType: G.1X
             Command:
                 Name: glueetl
                 ScriptLocation: s3://bigdata1111/scripts_read.py
 
-
+    
+    GlueCrawler:
+        Type: AWS::Glue::Crawler
+        Properties:
+            Name: CrawlingData
+            DatabaseName:  gitdatabase
+            Targets:
+                S3Targets:
+                    - Path: s3://group05islaudatalake/datawarehouse/
+            Role: arn:aws:iam::672497526349:role/LabRole
+    
+  
     WorkflowStartTrigger:
           Type: AWS::Glue::Trigger
           Properties:
@@ -58,3 +69,34 @@ Resources:
               Actions:
                 - JobName: !Ref GlueJobImport
               WorkflowName:  !Ref WorkflowJob
+
+    CrawlerJobTrigger:
+        Type: AWS::Glue::Trigger
+        Properties:
+            Name: Jobsuccesful
+            Type: CONDITIONAL
+            StartOnCreation: TRUE
+            Description: Trigger to start the crawler
+            Actions:
+              - CrawlerName :  crawlingdata
+            Predicate: 
+              Conditions:
+                - LogicalOperator: EQUALS
+                  JobName: !Ref GlueJobImport
+                  State: SUCCEEDED
+            WorkflowName: !Ref WorkflowJob  
+            
+            
+    MyAthenaWorkGroup:
+        Type: AWS::Athena::WorkGroup
+        Properties:
+            Name: gitworkgrp
+            Description: workgroup for Athena
+            State: ENABLED
+            WorkGroupConfiguration:
+                BytesScannedCutoffPerQuery: 200000000
+                EnforceWorkGroupConfiguration: false
+                PublishCloudWatchMetricsEnabled: true
+                RequesterPaysEnabled: true
+                ResultConfiguration:
+                    OutputLocation: s3://group05islauoutput/Query/    
