@@ -18,7 +18,7 @@ Resources:
       Role: arn:aws:iam::843541387255:role/LabRole
       GlueVersion: 4.0
       NumberOfWorkers: 5
-      Timeout: 30
+      Timeout: 240
       WorkerType: G.1X
       Command:
         Name: glueetl
