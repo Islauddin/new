@@ -1,1 +1,97 @@
+AWSTemplateFormatVersion: "2010-09-09"
 
+Resources:
+  SourceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: group05isludatalake
+
+  DestinationBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: group05isludatawarehouse
+
+  IngestionGlueJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Name: crime-ingestion
+      Role: arn:aws:iam::843541387255:role/LabRole
+      GlueVersion: 4.0
+      NumberOfWorkers: 5
+      Timeout: 30
+      WorkerType: G.1X
+      Command:
+        Name: glueetl
+        ScriptLocation: s3://group05iusludatalake/datawarehouse/scripts_read.py
+      DefaultArguments:
+        "--job-language": "python"
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+
+  TransformationGlueJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Name: crime-transformation
+      Role: arn:aws:iam::843541387255:role/LabRole
+      GlueVersion: 4.0
+      NumberOfWorkers: 5
+      Timeout: 30
+      WorkerType: G.1X
+      Command:
+        Name: glueetl
+        ScriptLocation: s3://bigdata1111/scripts.py
+      DefaultArguments:
+        "--job-language": "python"
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+
+  GlueWorkflow:
+    Type: AWS::Glue::Workflow
+    Properties:
+      Description: ETL Job
+      MaxConcurrentRuns: 1
+      Name: crime-workflow
+
+  GlueTriggerImport:
+    Type: AWS::Glue::Trigger
+    DependsOn:
+      - GlueWorkflow
+      - IngestionGlueJob
+    Properties:
+      Actions:
+        - JobName: !Ref IngestionGlueJob
+      Description: Triggers the Import Jobs
+      Name: gluetriggerimport
+      Type: ON_DEMAND
+      WorkflowName: crime-workflow
+
+  GlueTriggerTransform:
+    Type: AWS::Glue::Trigger
+    DependsOn:
+      - GlueWorkflow
+      - TransformationGlueJob
+      - GlueTriggerImport
+    Properties:
+      Actions:
+        - JobName: !Ref TransformationGlueJob
+      Description: Triggers the transformation job
+      Name: gluetriggertransform
+      Predicate:
+        Conditions:
+          - JobName: !Ref IngestionGlueJob
+            LogicalOperator: EQUALS
+            State: SUCCEEDED
+        Logical: AND
+      Type: CONDITIONAL
+      StartOnCreation: True
+      WorkflowName: crime-workflow
+
+  DataCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: data-crawler
+      DatabaseName: default # Replace with your desired Glue database name
+      Targets:
+        S3Targets:
+          - Path: s3://grp6-datawarexxx # Specify the path of the bucket you want to crawl
+      Role: arn:aws:iam::843541387255:role/LabRole
