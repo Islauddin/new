@@ -4,12 +4,12 @@ Resources:
   SourceBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: group05isludatalake
+      BucketName: group05datalake
 
   DestinationBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: group05isludatawarehouse
+      BucketName: group05datawarehouse
 
   IngestionGlueJob:
     Type: AWS::Glue::Job
@@ -22,7 +22,7 @@ Resources:
       WorkerType: G.1X
       Command:
         Name: glueetl
-        ScriptLocation: s3://group05iusludatalake/datawarehouse/scripts_read.py
+        ScriptLocation: s3://scriptsgroup5/datainjation.py
       DefaultArguments:
         "--job-language": "python"
       ExecutionProperty:
@@ -39,7 +39,7 @@ Resources:
       WorkerType: G.1X
       Command:
         Name: glueetl
-        ScriptLocation: s3://bigdata1111/scripts.py
+        ScriptLocation: s3://scriptsgroup5/transformation.py
       DefaultArguments:
         "--job-language": "python"
       ExecutionProperty:
@@ -86,12 +86,25 @@ Resources:
       StartOnCreation: True
       WorkflowName: crime-workflow
 
+  GlueDatabase:
+        Type: AWS::Glue::Database
+        Properties:
+            CatalogId: !Ref AWS::AccountId
+            DatabaseInput:
+                Name: gitdatabase
+
   DataCrawler:
     Type: AWS::Glue::Crawler
+    DependsOn:
+      - SourceBucket
+      - DestinationBucket
+      - GlueDatabase
+      - GlueWorkflow
+      - GlueTriggerTransform
     Properties:
       Name: data-crawler
-      DatabaseName: default # Replace with your desired Glue database name
+      DatabaseName: gitdatabase # Replace with your desired Glue database name
       Targets:
         S3Targets:
-          - Path: s3://grp6-datawarexxx # Specify the path of the bucket you want to crawl
+          - Path: s3://group05datawarehouse # Specify the path of the bucket you want to crawl
       Role: arn:aws:iam::843541387255:role/LabRole
