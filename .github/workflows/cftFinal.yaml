@@ -39,7 +39,7 @@ Resources:
       WorkerType: G.1X
       Command:
         Name: glueetl
-        ScriptLocation: https://scriptsgroup5.s3.amazonaws.com/transformation.py
+        ScriptLocation: s3://scriptsgroup5/transformation.py
       DefaultArguments:
         "--job-language": "python"
       ExecutionProperty:
