@@ -16,7 +16,7 @@ jobs:
         run: |
           aws cloudformation deploy \
             --stack-name CFTStack \
-            --template-file .github/workflows/main.yaml \
+            --template-file .github/workflows/cftFinal.yaml \
             --capabilities CAPABILITY_IAM
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
