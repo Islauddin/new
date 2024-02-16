@@ -83,7 +83,7 @@ Resources:
             State: SUCCEEDED
         Logical: AND
       Type: CONDITIONAL
-      WorkflowName: NYC-workflow
+      WorkflowName: nyc-workflow
 
 
   GlueDatabase:
@@ -107,4 +107,4 @@ Resources:
       Targets:
         S3Targets:
           - Path: s3://group05datawarehouse # Specify the path of the bucket you want to crawl
-      Role: arn:aws:iam::314119374691:role/LabRole
+      Role: arn:aws:iam::843541387255:role/LabRole
